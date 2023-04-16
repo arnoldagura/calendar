@@ -1,0 +1,58 @@
+.time-view {
+  overflow-x: auto;
+  display: block;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+th {
+  font-weight: bold;
+}
+
+.time-cell {
+  font-weight: bold;
+  width: 160px;
+}
+
+.event-cell {
+  padding: 0px;
+}
+
+.event-box {
+  color: white;
+  overflow: hidden;
+  padding: 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.event-box:hover {
+  overflow: visible;
+}
+
+.right-table {
+  position: absolute;
+  left: -180px;
+}
+
+.event-box {
+  position: relative;
+}
+
+.delete-button {
+  position: absolute;
+  top: 8;
+  right: 0;
+  font-size: 20px;
+}

@@ -1,0 +1,87 @@
+<mat-grid-list cols="1" rows="1" rowHeight="20vh">
+  <mat-grid-tile>
+    <mat-card class="example-card">
+      <mat-card-header>
+        <mat-card-title>Calendar</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form>
+          <mat-form-field>
+            <input
+              matInput
+              [matDatepicker]="picker"
+              [formControl]="selectedDate"
+            />
+            <mat-datepicker-toggle
+              matSuffix
+              [for]="picker"
+            ></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        </form>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" (click)="addEvent()">
+          Add Appointment
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-grid-tile>
+</mat-grid-list>
+<div class="time-view">
+  <mat-grid-list cols="12" rowHeight="100vh">
+    <mat-grid-tile colspan="6">
+      <table>
+        <thead>
+          <tr>
+            <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
+          </tr>
+        </thead>
+        <tbody *ngIf="eventsInTime$ | async as events">
+          <ng-container *ngFor="let time of events">
+            <tr>
+              <td class="time-cell">{{ time.time }}</td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="6">
+      <table class="right-table">
+        <thead>
+          <tr>
+            <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
+          </tr>
+        </thead>
+        <tbody
+          *ngIf="eventsInTime$ | async as events"
+          cdkDropList
+          [cdkDropListData]="events"
+          (cdkDropListDropped)="moveTimeEvent($event)"
+        >
+          <ng-container *ngFor="let time of events">
+            <tr cdkDrag>
+              <td class="time-cell" [style.color]="'white'">{{ time.time }}</td>
+              <td class="event-cell" (click)="time.event ?? addEvent(time)">
+                <div
+                  *ngIf="time.event"
+                  class="event-box"
+                  [style.backgroundColor]="'#393646'"
+                >
+                  {{ time.event.title }}
+                  <mat-icon
+                    mat-icon-button
+                    class="delete-button"
+                    color="warn"
+                    (click)="openDeleteConfirmationDialog(time.event)"
+                    >delete</mat-icon
+                  >
+                </div>
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+      </table>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

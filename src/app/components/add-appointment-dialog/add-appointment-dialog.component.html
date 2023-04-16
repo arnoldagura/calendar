@@ -1,0 +1,40 @@
+<h2 mat-dialog-title>Add Appointment</h2>
+<div mat-dialog-content>
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+    <mat-form-field>
+      <input matInput placeholder="Title" formControlName="title" />
+    </mat-form-field>
+    <mat-form-field>
+      <input
+        matInput
+        [matDatepicker]="datePicker"
+        placeholder="Start Date"
+        formControlName="date"
+      />
+      <mat-datepicker-toggle
+        matSuffix
+        [for]="datePicker"
+      ></mat-datepicker-toggle>
+      <mat-datepicker #datePicker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select formControlName="startTime" placeholder="Start Time">
+        <mat-option *ngFor="let time of times" [value]="time">{{
+          time
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-select formControlName="endTime" placeholder="End Time">
+        <mat-option *ngFor="let time of times" [value]="time">{{
+          time
+        }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="example-button-row">
+      <button mat-button color="primary" type="submit">Submit</button>
+    </div>
+  </form>
+</div>
