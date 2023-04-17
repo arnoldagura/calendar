@@ -11,13 +11,6 @@ const routes: Routes = [
     path: 'time',
     loadChildren: () => import('./time/time.module').then((m) => m.TimeModule),
   },
-  // {
-  //   path: 'calendar',
-  //   loadChildren: () =>
-  //     import('./components/calendar/calendar.module').then(
-  //       (m) => m.CalendarModule
-  //     ),
-  // },
   {
     path: '**',
     redirectTo: '/time',

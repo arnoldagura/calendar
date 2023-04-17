@@ -1,40 +1,67 @@
 <h2 mat-dialog-title>Add Appointment</h2>
 <div mat-dialog-content>
   <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
-    <mat-form-field>
-      <input matInput placeholder="Title" formControlName="title" />
+    <mat-form-field appearance="outline">
+      <mat-label>Title</mat-label>
+      <input matInput formControlName="title" />
+      <mat-error *ngIf="appointmentForm.controls['title'].hasError('required')">
+        Title is required.
+      </mat-error>
     </mat-form-field>
-    <mat-form-field>
-      <input
-        matInput
-        [matDatepicker]="datePicker"
-        placeholder="Start Date"
-        formControlName="date"
-      />
+
+    <mat-form-field appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="datePicker" formControlName="date" />
       <mat-datepicker-toggle
         matSuffix
         [for]="datePicker"
       ></mat-datepicker-toggle>
       <mat-datepicker #datePicker></mat-datepicker>
-    </mat-form-field>
-    <mat-form-field>
-      <mat-select formControlName="startTime" placeholder="Start Time">
-        <mat-option *ngFor="let time of times" [value]="time">{{
-          time
-        }}</mat-option>
-      </mat-select>
+      <mat-error
+        *ngIf="appointmentForm.controls['date'].errors?.['matDatepickerParse']?.text === ''"
+        >Date is required.</mat-error
+      >
     </mat-form-field>
 
-    <mat-form-field>
-      <mat-select formControlName="endTime" placeholder="End Time">
-        <mat-option *ngFor="let time of times" [value]="time">{{
-          time
-        }}</mat-option>
-      </mat-select>
-    </mat-form-field>
+    <mat-grid-list cols="2" rowHeight="150px">
+      <mat-grid-tile>
+        <mat-form-field appearance="outline">
+          <mat-label>Start Time</mat-label>
+          <mat-select formControlName="startTime" placeholder="Start Time">
+            <mat-option *ngFor="let time of times" [value]="time">{{
+              time
+            }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="startTimeControl.invalid">{{
+            errorMessages.required
+          }}</mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-form-field appearance="outline">
+          <mat-label>End Time</mat-label>
+          <mat-select formControlName="endTime" placeholder="End Time">
+            <mat-option *ngFor="let time of times" [value]="time">{{
+              time
+            }}</mat-option>
+          </mat-select>
+          <mat-error *ngIf="endTimeControl.errors?.['required']">{{
+            errorMessages.required
+          }}</mat-error>
+          <mat-error *ngIf="endTimeControl.errors?.['startEnd']">{{
+            errorMessages.startEnd
+          }}</mat-error>
+        </mat-form-field>
+      </mat-grid-tile>
+    </mat-grid-list>
 
-    <div class="example-button-row">
-      <button mat-button color="primary" type="submit">Submit</button>
-    </div>
+    <mat-dialog-actions>
+      <button mat-button (click)="onCancel()">
+        {{ errorMessages.cancel }}
+      </button>
+      <button mat-button color="primary" type="submit">
+        {{ errorMessages.submit }}
+      </button>
+    </mat-dialog-actions>
   </form>
 </div>

@@ -21,7 +21,7 @@
         </form>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="addEvent()">
+        <button mat-raised-button color="primary" (click)="addAppointment()">
           Add Appointment
         </button>
       </mat-card-actions>
@@ -37,10 +37,12 @@
             <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
           </tr>
         </thead>
-        <tbody *ngIf="eventsInTime$ | async as events">
-          <ng-container *ngFor="let time of events">
+        <tbody *ngIf="appointmentInTime$ | async as timeSlots">
+          <ng-container *ngFor="let time of timeSlots">
             <tr>
-              <td class="time-cell">{{ time.time }}</td>
+              <td class="time-cell">
+                {{ time.time }}
+              </td>
             </tr>
           </ng-container>
         </tbody>
@@ -54,26 +56,29 @@
           </tr>
         </thead>
         <tbody
-          *ngIf="eventsInTime$ | async as events"
+          *ngIf="appointmentInTime$ | async as timeSlots"
           cdkDropList
-          [cdkDropListData]="events"
-          (cdkDropListDropped)="moveTimeEvent($event)"
+          [cdkDropListData]="timeSlots"
+          (cdkDropListDropped)="moveTimeAppointment($event)"
         >
-          <ng-container *ngFor="let time of events">
+          <ng-container *ngFor="let time of timeSlots">
             <tr cdkDrag>
               <td class="time-cell" [style.color]="'white'">{{ time.time }}</td>
-              <td class="event-cell" (click)="time.event ?? addEvent(time)">
+              <td
+                class="event-cell"
+                (click)="time.appointment ?? addAppointment(time)"
+              >
                 <div
-                  *ngIf="time.event"
+                  *ngIf="time.appointment"
                   class="event-box"
                   [style.backgroundColor]="'#393646'"
                 >
-                  {{ time.event.title }}
+                  {{ time.appointment.title }}
                   <mat-icon
                     mat-icon-button
                     class="delete-button"
                     color="warn"
-                    (click)="openDeleteConfirmationDialog(time.event)"
+                    (click)="openDeleteConfirmationDialog(time.appointment.id)"
                     >delete</mat-icon
                   >
                 </div>
