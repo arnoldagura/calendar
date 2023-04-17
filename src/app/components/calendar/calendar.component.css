@@ -1,0 +1,22 @@
+.date-tile {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.selected {
+  background-color: violet;
+  color: white;
+  border-radius: 50%;
+}
+
+.calendar {
+  width: 350px;
+}
+
+.title_center {
+  display: flex;
+  justify-content: center; 
+  align-items: center; 
+}

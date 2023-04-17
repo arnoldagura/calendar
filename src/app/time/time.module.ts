@@ -17,10 +17,14 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { CalendarService } from '../services/calendar.service';
+import { CalendarComponent } from '../components/calendar/calendar.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   declarations: [
     TimeComponent,
+    CalendarComponent,
     AddAppointmentDialogComponent,
     ConfirmationDialogComponent,
   ],
@@ -36,6 +40,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatDialogModule,
     MatSelectModule,
     MatInputModule,
+    MatButtonModule,
     ReactiveFormsModule,
     FormsModule,
     DragDropModule,
@@ -43,6 +48,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
   ],
   providers: [
     AppointmentService,
+    CalendarService,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
   ],
 })

@@ -1,33 +1,8 @@
-<mat-grid-list cols="1" rows="1" rowHeight="20vh">
-  <mat-grid-tile>
-    <mat-card class="example-card">
-      <mat-card-header>
-        <mat-card-title>Calendar</mat-card-title>
-      </mat-card-header>
-      <mat-card-content>
-        <form>
-          <mat-form-field>
-            <input
-              matInput
-              [matDatepicker]="picker"
-              [formControl]="selectedDate"
-            />
-            <mat-datepicker-toggle
-              matSuffix
-              [for]="picker"
-            ></mat-datepicker-toggle>
-            <mat-datepicker #picker></mat-datepicker>
-          </mat-form-field>
-        </form>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-raised-button color="primary" (click)="addAppointment()">
-          Add Appointment
-        </button>
-      </mat-card-actions>
-    </mat-card>
-  </mat-grid-tile>
-</mat-grid-list>
+<mat-card-title>Calendar App</mat-card-title>
+<button mat-raised-button color="primary" (click)="addAppointment()">
+  <mat-icon>add_circle</mat-icon> Add Appointment
+</button>
+<app-calendar [selectedDate]="selectedDate"> </app-calendar>
 <div class="time-view">
   <mat-grid-list cols="12" rowHeight="100vh">
     <mat-grid-tile colspan="6">
@@ -63,7 +38,9 @@
         >
           <ng-container *ngFor="let time of timeSlots">
             <tr cdkDrag>
-              <td class="time-cell" [style.color]="'white'">{{ time.time }}</td>
+              <td class="time-cell" [style.color]="'white'">
+                {{ time.time }}
+              </td>
               <td
                 class="event-cell"
                 (click)="time.appointment ?? addAppointment(time)"

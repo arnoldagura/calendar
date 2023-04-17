@@ -1,17 +1,18 @@
-interface CalendarDay {
-  date: Date;
+export interface CalendarDay {
+  date?: Date;
+  dayOfWeek?: number;
   events: CalendarEvent[];
   appointments: CalendarAppointment[];
 }
 
-interface CalendarEvent {
+export interface CalendarEvent {
   id: string;
   title: string;
   startDate: Date;
   endDate: Date;
 }
 
-interface CalendarAppointment {
+export interface CalendarAppointment {
   id: string;
   title: string;
   startDate: Date;
