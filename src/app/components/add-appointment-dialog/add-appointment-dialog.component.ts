@@ -6,7 +6,6 @@ import {
   Validators,
   FormControl,
 } from '@angular/forms';
-import { AppointmentService } from 'src/app/services/appointment.service';
 
 @Component({
   selector: 'app-add-appointment-dialog',
@@ -26,7 +25,6 @@ export class AddAppointmentDialogComponent implements OnInit {
   constructor(
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddAppointmentDialogComponent>,
-    private appointmentService: AppointmentService,
     @Inject(MAT_DIALOG_DATA)
     public data: {
       title: string;
@@ -47,19 +45,6 @@ export class AddAppointmentDialogComponent implements OnInit {
       endTime: [this.data.endTime || '', [Validators.required]],
       description: [''],
     });
-
-    // if (this.data.appointmentId) {
-    //   const appointment = this.appointmentService.getAppointmentById(
-    //     this.data.appointmentId
-    //   );
-    //   this.appointmentForm.patchValue({
-    //     title: appointment.title,
-    //     date: appointment.date,
-    //     startTime: appointment.startTime,
-    //     endTime: appointment.endTime,
-    //     description: appointment.description,
-    //   });
-    // }
 
     this.appointmentForm.get('endTime')?.addValidators((control) => {
       const startTime = new Date(`01/01/2021 ${this.startTimeControl.value}`);

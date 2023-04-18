@@ -2,7 +2,7 @@ import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Observable, BehaviorSubject, startWith } from 'rxjs';
+import { Observable, takeUntil, Subject } from 'rxjs';
 import { IAppointment, ITimeSlot } from 'src/app/models/appointment.model';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { AddAppointmentDialogComponent } from '../components/add-appointment-dialog/add-appointment-dialog.component';
@@ -16,26 +16,28 @@ import { FormControl } from '@angular/forms';
 })
 export class TimeComponent {
   times: string[] = [];
-  times$: string[] = [];
   selectedDate = new FormControl(new Date());
-  selectedDateChanges$ = this.selectedDate.valueChanges.pipe(
-    startWith(this.selectedDate.value)
-  );
-  appointmentInTime$: Observable<ITimeSlot[]> = new BehaviorSubject<
-    ITimeSlot[]
-  >([]);
+  appointmentInTime$: Observable<ITimeSlot[]> =
+    this.appointmentService.getAppointmentsForSelectedDay();
+  private ubsubscribe$ = new Subject<void>();
+
   constructor(
     private dialog: MatDialog,
     private _snackBar: MatSnackBar,
     private appointmentService: AppointmentService
   ) {
-    this.selectedDateChanges$.subscribe(() => this.updateCalendar());
+    this.selectedDate.valueChanges
+      .pipe(takeUntil(this.ubsubscribe$))
+      .subscribe(() => this.updateCalendar());
   }
 
-  ngOnInit(): void {
-    this.appointmentInTime$ =
-      this.appointmentService.getAppointmentsForSelectedDay();
+  ngOnInit() {
     this.updateCalendar();
+  }
+
+  ngOnDestroy() {
+    this.ubsubscribe$.next();
+    this.ubsubscribe$.complete();
   }
 
   updateCalendar() {
@@ -62,7 +64,6 @@ export class TimeComponent {
             duration: 3000,
           })
         );
-        this.updateCalendar();
       }
     });
   }
@@ -86,7 +87,6 @@ export class TimeComponent {
         duration: 3000,
       })
     );
-    this.updateCalendar();
   }
 
   moveTimeAppointment(appointment: CdkDragDrop<ITimeSlot[]>) {
@@ -113,9 +113,6 @@ export class TimeComponent {
             this._snackBar.open(ev, 'close', {
               duration: 3000,
             });
-            this.updateCalendar();
-            this.appointmentInTime$ =
-              this.appointmentService.getAppointmentsForSelectedDay();
           });
       }
     }
