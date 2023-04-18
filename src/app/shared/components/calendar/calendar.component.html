@@ -28,7 +28,7 @@
         class="date-tile"
         [class.selected]="isSelected(dateTile)"
         [ngClass]="{
-          today: dateTile.getDate() === today$.value.getDate()
+          today: dateTile >= today$.value && dateTile <= today$.value
         }"
         (click)="selectDate(dateTile); selectedDate.setValue(dateTile)"
       >

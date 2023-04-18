@@ -10,7 +10,10 @@ import { BehaviorSubject } from 'rxjs';
 export class CalendarComponent {
   currentDate$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
 
-  today$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
+  today$: BehaviorSubject<Date> = new BehaviorSubject(
+    new Date(new Date().setHours(0, 0, 0, 0))
+  );
+
   @Input() selectedDate: FormControl;
   constructor() {
     this.selectedDate = new FormControl(new Date());

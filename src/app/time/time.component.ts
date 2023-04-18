@@ -5,9 +5,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, takeUntil, Subject } from 'rxjs';
 import { IAppointment, ITimeSlot } from 'src/app/models/appointment.model';
 import { AppointmentService } from 'src/app/services/appointment.service';
-import { AddAppointmentDialogComponent } from '../components/add-appointment-dialog/add-appointment-dialog.component';
-import { ConfirmationDialogComponent } from '../components/confirmation-dialog.component';
 import { FormControl } from '@angular/forms';
+import { AddAppointmentDialogComponent } from 'src/app/shared/components/add-appointment-dialog/add-appointment-dialog.component';
+import { ConfirmationDialogComponent } from 'src/app/shared/components/confirmation-dialog.component';
 
 @Component({
   selector: 'app-times',
