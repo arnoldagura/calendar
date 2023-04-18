@@ -1,16 +1,30 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, map } from 'rxjs';
-import { Appointment, TimeSlot } from '../models/appointment.model';
+import {
+  BehaviorSubject,
+  EMPTY,
+  Observable,
+  map,
+  of,
+  switchMap,
+  take,
+  tap,
+  throwError,
+} from 'rxjs';
+import {
+  Appointment,
+  IAppointment,
+  ITimeSlot,
+} from '../models/appointment.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AppointmentService {
-  private appointments$: BehaviorSubject<Appointment[]> = new BehaviorSubject<
-    Appointment[]
+  private appointments$: BehaviorSubject<IAppointment[]> = new BehaviorSubject<
+    IAppointment[]
   >([]);
-  private timeSlots$: BehaviorSubject<TimeSlot[]> = new BehaviorSubject<
-    TimeSlot[]
+  private timeSlots$: BehaviorSubject<ITimeSlot[]> = new BehaviorSubject<
+    ITimeSlot[]
   >([]);
 
   times: string[] = [
@@ -64,15 +78,15 @@ export class AppointmentService {
     );
   }
 
-  getAppointmentsValue(): Appointment[] {
+  getAppointmentsValue(): IAppointment[] {
     return this.appointments$.getValue();
   }
 
-  getAppointments(): Observable<Appointment[]> {
+  getAppointments(): Observable<IAppointment[]> {
     return this.appointments$.asObservable();
   }
 
-  getAppointmentsForSelectedDay(): Observable<TimeSlot[]> {
+  getAppointmentsForSelectedDay(): Observable<ITimeSlot[]> {
     return this.timeSlots$.asObservable();
   }
 
@@ -87,83 +101,119 @@ export class AppointmentService {
     return id;
   }
 
-  addAppointment(appointment: Appointment): void {
+  addAppointment(appointment: IAppointment): Observable<string> {
     const currentAppointments = this.appointments$.getValue();
-    appointment.id = this.generateId();
-    this.appointments$.next([...currentAppointments, appointment]);
-    this.saveAppointmentsToStorage();
-  }
-
-  getAppointmentById(id: string): Appointment {
-    const appointment = this.appointments$.value.find((a) => a.id === id);
-
-    if (!appointment) {
-      throw new Error(`Appointment with id ${id} not found.`);
-    }
-
-    return appointment;
-  }
-  updateAppointment(updatedAppointment: Appointment): void {
-    const currentAppointments = this.appointments$.getValue();
-    const index = currentAppointments.findIndex(
-      (appointment) => appointment.id === updatedAppointment.id
-    );
-    if (index !== -1) {
-      currentAppointments[index] = updatedAppointment;
-      this.appointments$.next([...currentAppointments]);
-      this.saveAppointmentsToStorage();
-    }
-  }
-
-  deleteAppointment(id: string): void {
-    const currentAppointments = this.appointments$.getValue();
-    const index = currentAppointments.findIndex(
-      (appointment) => appointment.id === id
-    );
-    if (index !== -1) {
-      currentAppointments.splice(index, 1);
-      this.appointments$.next([...currentAppointments]);
-      this.saveAppointmentsToStorage();
-    }
-  }
-
-  moveAppointment(appointment: Appointment) {
-    const currentAppointments = this.appointments$.getValue();
-    const index = currentAppointments.findIndex((e) => e === appointment);
-    if (index < 0) {
-      return;
-    }
-
-    const updatedAppointment: Appointment = {
+    const newAppointment = new Appointment({
       ...appointment,
-    };
-
-    currentAppointments[index] = updatedAppointment;
-    this.appointments$.next([...currentAppointments]);
-    this.saveAppointmentsToStorage();
-
-    return updatedAppointment;
+      id: this.generateId(),
+    });
+    if (!newAppointment.isValid) {
+      return throwError(new Error('Invalid appointment data'));
+    }
+    this.appointments$.next([...currentAppointments, newAppointment]);
+    return of('Added Successfully').pipe(
+      tap(() => this.saveAppointmentsToStorage())
+    );
   }
 
-  updateSelectedDay(month: Date) {
-    month.setHours(0, 0, 0, 0);
+  // updateAppointment(updatedAppointment: IAppointment): Observable<string> {
+  //   return this.appointments$.pipe(
+  //     take(1),
+  //     map((appointments) => {
+  //       const index = appointments.findIndex(
+  //         (appointment) => appointment.id === updatedAppointment.id
+  //       );
+  //       if (index !== -1) {
+  //         appointments[index] = updatedAppointment;
+  //         return appointments;
+  //       }
+  //       throw new Error(
+  //         `Appointment with id ${updatedAppointment.id} not found.`
+  //       );
+  //     }),
+  //     tap((appointments) => {
+  //       this.saveAppointmentsToStorage();
+  //     }),
+  //     map(() => `Appointment updated successfully.`)
+  //   );
+  // }
+  updateAppointment(updatedAppointment: IAppointment): Observable<string> {
+    return this.appointments$.pipe(
+      take(1),
+      map((appointments) => {
+        const index = appointments.findIndex(
+          (appointment) => appointment.id === updatedAppointment.id
+        );
+        if (index !== -1) {
+          const updatedAppointments = [...appointments];
+          updatedAppointments[index] = updatedAppointment;
+          this.appointments$.next(updatedAppointments);
+          return `Appointment updated successfully.`;
+        }
+        throw new Error(
+          `Appointment with id ${updatedAppointment.id} not found.`
+        );
+      }),
+      tap(() => {
+        this.saveAppointmentsToStorage();
+      })
+    );
+  }
+
+  deleteAppointment(id: string): Observable<string> {
+    return this.appointments$.pipe(
+      take(1),
+      map((appointments) => {
+        const index = appointments.findIndex(
+          (appointment) => appointment.id === id
+        );
+        if (index === -1) {
+          throw new Error(`Appointment with id ${id} not found.`);
+        }
+        const updatedAppointments = appointments.filter(
+          (appointment) => appointment.id !== id
+        );
+        return updatedAppointments;
+      }),
+      tap((updatedAppointments) => {
+        this.appointments$.next(updatedAppointments);
+        this.saveAppointmentsToStorage();
+      }),
+      map(() => `Appointment deleted successfully.`)
+    );
+  }
+
+  updateSelectedDay(selectedDate: Date) {
+    const startOfDay = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate()
+    );
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(
+      selectedDate.getFullYear(),
+      selectedDate.getMonth(),
+      selectedDate.getDate() + 1
+    );
+    endOfDay.setHours(0, 0, 0, 0);
+
     this.appointments$
-      .asObservable()
       .pipe(
         map((appointments) =>
           this.times.map((time) => {
             const appointment = appointments.find(
               (e) =>
-                new Date(e.date) >= month &&
-                new Date(e.date) <= month &&
+                new Date(e.date) >= startOfDay &&
+                new Date(e.date) < endOfDay &&
                 e.startTime === time
             );
             return { time, appointment };
           })
-        )
+        ),
+        tap((appointments) => {
+          this.timeSlots$.next(appointments);
+        })
       )
-      .subscribe((appointments) => {
-        this.timeSlots$.next(appointments);
-      });
+      .subscribe();
   }
 }

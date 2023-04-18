@@ -1,7 +1,3 @@
-.time-view {
-  overflow-x: auto;
-}
-
 table {
   border-collapse: collapse;
   width: 100%;
@@ -54,4 +50,20 @@ th {
   top: 8;
   right: 0;
   font-size: 20px;
+}
+
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.time-view {
+  position: relative;
+}
+.grid-layout-custom {
+  width: 75vw;
+  height: 50vh;
+}
+.add-btn {
+  margin: 10px;
 }

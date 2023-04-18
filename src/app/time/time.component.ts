@@ -1,8 +1,9 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, BehaviorSubject, startWith } from 'rxjs';
-import { Appointment, TimeSlot } from 'src/app/models/appointment.model';
+import { IAppointment, ITimeSlot } from 'src/app/models/appointment.model';
 import { AppointmentService } from 'src/app/services/appointment.service';
 import { AddAppointmentDialogComponent } from '../components/add-appointment-dialog/add-appointment-dialog.component';
 import { ConfirmationDialogComponent } from '../components/confirmation-dialog.component';
@@ -20,19 +21,20 @@ export class TimeComponent {
   selectedDateChanges$ = this.selectedDate.valueChanges.pipe(
     startWith(this.selectedDate.value)
   );
-  appointmentInTime$: Observable<TimeSlot[]> = new BehaviorSubject<TimeSlot[]>(
-    []
-  );
+  appointmentInTime$: Observable<ITimeSlot[]> = new BehaviorSubject<
+    ITimeSlot[]
+  >([]);
   constructor(
     private dialog: MatDialog,
+    private _snackBar: MatSnackBar,
     private appointmentService: AppointmentService
   ) {
     this.selectedDateChanges$.subscribe(() => this.updateCalendar());
-    this.appointmentInTime$ =
-      this.appointmentService.getAppointmentsForSelectedDay();
   }
 
   ngOnInit(): void {
+    this.appointmentInTime$ =
+      this.appointmentService.getAppointmentsForSelectedDay();
     this.updateCalendar();
   }
 
@@ -42,21 +44,24 @@ export class TimeComponent {
     this.appointmentService.updateSelectedDay(selectedDateValue);
   }
 
-  addAppointment(time?: TimeSlot) {
+  addAppointment(time?: ITimeSlot) {
     const dialogRef = this.dialog.open(AddAppointmentDialogComponent, {
       width: '500px',
       data: {
         times: this.times,
         startTime: time?.time ?? '',
         endTime: time ? this.times[this.times.indexOf(time.time) + 1] : '',
-        date: this.selectedDate,
+        date: this.selectedDate.value,
       },
     });
 
-    dialogRef.afterClosed().subscribe((result: Appointment) => {
+    dialogRef.afterClosed().subscribe((result: IAppointment) => {
       if (result) {
-        console.log(result);
-        this.appointmentService.addAppointment(result);
+        this.appointmentService.addAppointment(result).subscribe((ev) =>
+          this._snackBar.open(ev, 'close', {
+            duration: 3000,
+          })
+        );
         this.updateCalendar();
       }
     });
@@ -76,11 +81,15 @@ export class TimeComponent {
   }
 
   deleteAppointment(id: string) {
-    this.appointmentService.deleteAppointment(id);
+    this.appointmentService.deleteAppointment(id).subscribe((ev) =>
+      this._snackBar.open(ev, 'close', {
+        duration: 3000,
+      })
+    );
     this.updateCalendar();
   }
 
-  moveTimeAppointment(appointment: CdkDragDrop<TimeSlot[]>) {
+  moveTimeAppointment(appointment: CdkDragDrop<ITimeSlot[]>) {
     const prevIndex = appointment.previousIndex;
     const newIndex = appointment.currentIndex;
     if (prevIndex !== newIndex) {
@@ -91,15 +100,23 @@ export class TimeComponent {
 
       const eventPrevEndT = this.times.indexOf(appointment?.endTime ?? '');
       if (appointment) {
-        this.appointmentService.updateAppointment({
-          id: appointment.id,
-          title: appointment.title,
-          date: appointment.date,
-          startTime: this.times[newIndex],
-          endTime: this.times[newIndex + (eventPrevEndT - prevIndex)],
-          description: appointment.description,
-        });
-        this.updateCalendar();
+        this.appointmentService
+          .updateAppointment({
+            id: appointment.id,
+            title: appointment.title,
+            date: appointment.date,
+            startTime: this.times[newIndex],
+            endTime: this.times[newIndex + (eventPrevEndT - prevIndex)],
+            description: appointment.description,
+          })
+          .subscribe((ev) => {
+            this._snackBar.open(ev, 'close', {
+              duration: 3000,
+            });
+            this.updateCalendar();
+            this.appointmentInTime$ =
+              this.appointmentService.getAppointmentsForSelectedDay();
+          });
       }
     }
   }

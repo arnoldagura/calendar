@@ -27,6 +27,9 @@
         *ngFor="let dateTile of dateTiles"
         class="date-tile"
         [class.selected]="isSelected(dateTile)"
+        [ngClass]="{
+          today: dateTile.getDate() === today$.value.getDate()
+        }"
         (click)="selectDate(dateTile); selectedDate.setValue(dateTile)"
       >
         {{ dateTile.getDate() }}

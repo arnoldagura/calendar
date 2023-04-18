@@ -34,7 +34,6 @@ export class AddAppointmentDialogComponent implements OnInit {
       endTime: string;
       times: string[];
       date: Date;
-      appointmentId?: string; // new argument for appointment being edited
     }
   ) {
     this.times = data.times;
@@ -49,18 +48,18 @@ export class AddAppointmentDialogComponent implements OnInit {
       description: [''],
     });
 
-    if (this.data.appointmentId) {
-      const appointment = this.appointmentService.getAppointmentById(
-        this.data.appointmentId
-      );
-      this.appointmentForm.patchValue({
-        title: appointment.title,
-        date: appointment.date,
-        startTime: appointment.startTime,
-        endTime: appointment.endTime,
-        description: appointment.description,
-      });
-    }
+    // if (this.data.appointmentId) {
+    //   const appointment = this.appointmentService.getAppointmentById(
+    //     this.data.appointmentId
+    //   );
+    //   this.appointmentForm.patchValue({
+    //     title: appointment.title,
+    //     date: appointment.date,
+    //     startTime: appointment.startTime,
+    //     endTime: appointment.endTime,
+    //     description: appointment.description,
+    //   });
+    // }
 
     this.appointmentForm.get('endTime')?.addValidators((control) => {
       const startTime = new Date(`01/01/2021 ${this.startTimeControl.value}`);

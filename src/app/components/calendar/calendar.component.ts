@@ -9,6 +9,8 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class CalendarComponent implements OnInit {
   currentDate$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
+
+  today$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
   @Input() selectedDate: FormControl;
   constructor() {
     this.selectedDate = new FormControl(new Date());

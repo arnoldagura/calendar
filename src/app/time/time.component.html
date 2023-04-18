@@ -1,69 +1,81 @@
-<mat-card-title>Calendar App</mat-card-title>
-<button mat-raised-button color="primary" (click)="addAppointment()">
-  <mat-icon>add_circle</mat-icon> Add Appointment
-</button>
-<app-calendar [selectedDate]="selectedDate"> </app-calendar>
-<div class="time-view">
-  <mat-grid-list cols="12" rowHeight="100vh">
-    <mat-grid-tile colspan="6">
-      <table>
-        <thead>
-          <tr>
-            <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
-          </tr>
-        </thead>
-        <tbody *ngIf="appointmentInTime$ | async as timeSlots">
-          <ng-container *ngFor="let time of timeSlots">
+<div class="container">
+  <div>
+    <mat-card-title>Calendar App</mat-card-title>
+    <button
+      mat-fab
+      extended
+      color="primary"
+      class="add-btn"
+      (click)="addAppointment()"
+    >
+      <mat-icon>add_circle</mat-icon> Add Appointment
+    </button>
+    <app-calendar [selectedDate]="selectedDate"> </app-calendar>
+  </div>
+  <div class="time-view">
+    <mat-grid-list cols="12" rowHeight="100vh" class="grid-layout-custom">
+      <mat-grid-tile colspan="4">
+        <table>
+          <thead>
             <tr>
-              <td class="time-cell">
-                {{ time.time }}
-              </td>
+              <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
             </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </mat-grid-tile>
-    <mat-grid-tile colspan="6">
-      <table class="right-table">
-        <thead>
-          <tr>
-            <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
-          </tr>
-        </thead>
-        <tbody
-          *ngIf="appointmentInTime$ | async as timeSlots"
-          cdkDropList
-          [cdkDropListData]="timeSlots"
-          (cdkDropListDropped)="moveTimeAppointment($event)"
-        >
-          <ng-container *ngFor="let time of timeSlots">
-            <tr cdkDrag>
-              <td class="time-cell" [style.color]="'white'">
-                {{ time.time }}
-              </td>
-              <td
-                class="event-cell"
-                (click)="time.appointment ?? addAppointment(time)"
-              >
-                <div
-                  *ngIf="time.appointment"
-                  class="event-box"
-                  [style.backgroundColor]="'#393646'"
+          </thead>
+          <tbody *ngIf="appointmentInTime$ | async as timeSlots">
+            <ng-container *ngFor="let time of timeSlots">
+              <tr>
+                <td class="time-cell">
+                  {{ time.time }}
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </mat-grid-tile>
+      <mat-grid-tile colspan="8">
+        <table class="right-table">
+          <thead>
+            <tr>
+              <th>{{ selectedDate.value | date : "EEEE, MMM d" }}</th>
+            </tr>
+          </thead>
+          <tbody
+            *ngIf="appointmentInTime$ | async as timeSlots"
+            cdkDropList
+            [cdkDropListData]="timeSlots"
+            (cdkDropListDropped)="moveTimeAppointment($event)"
+          >
+            <ng-container *ngFor="let time of timeSlots">
+              <tr cdkDrag>
+                <td class="time-cell" [style.color]="'white'">
+                  {{ time.time }}
+                </td>
+                <td
+                  class="event-cell"
+                  (click)="time.appointment ?? addAppointment(time)"
                 >
-                  {{ time.appointment.title }}
-                  <mat-icon
-                    mat-icon-button
-                    class="delete-button"
-                    color="warn"
-                    (click)="openDeleteConfirmationDialog(time.appointment.id)"
-                    >delete</mat-icon
+                  <div
+                    *ngIf="time.appointment"
+                    class="event-box"
+                    [style.backgroundColor]="'#393646'"
                   >
-                </div>
-              </td>
-            </tr>
-          </ng-container>
-        </tbody>
-      </table>
-    </mat-grid-tile>
-  </mat-grid-list>
+                    {{ time.appointment.title }}
+                    <mat-icon
+                      mat-icon-button
+                      class="delete-button"
+                      color="warn"
+                      (click)="
+                        openDeleteConfirmationDialog(time.appointment.id)
+                      "
+                      >delete</mat-icon
+                    >
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
 </div>

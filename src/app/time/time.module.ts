@@ -1,8 +1,9 @@
 import { NgModule } from '@angular/core';
 import { TimeComponent } from './time.component';
-
 import { AddAppointmentDialogComponent } from '../components/add-appointment-dialog/add-appointment-dialog.component';
 import { ConfirmationDialogComponent } from '../components/confirmation-dialog.component';
+import { CalendarComponent } from '../components/calendar/calendar.component';
+
 import { TimeRoutingModule } from './time-routing.module';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,10 +17,9 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { DragDropModule } from '@angular/cdk/drag-drop';
-import { CalendarService } from '../services/calendar.service';
-import { CalendarComponent } from '../components/calendar/calendar.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -41,6 +41,7 @@ import { MatButtonModule } from '@angular/material/button';
     MatSelectModule,
     MatInputModule,
     MatButtonModule,
+    MatSnackBarModule,
     ReactiveFormsModule,
     FormsModule,
     DragDropModule,
@@ -48,7 +49,6 @@ import { MatButtonModule } from '@angular/material/button';
   ],
   providers: [
     AppointmentService,
-    CalendarService,
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
   ],
 })
