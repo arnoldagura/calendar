@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import {
   BehaviorSubject,
-  EMPTY,
   Observable,
   map,
   of,
-  switchMap,
   take,
   tap,
   throwError,

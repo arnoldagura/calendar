@@ -1,5 +1,5 @@
 import { CdkDragDrop } from '@angular/cdk/drag-drop';
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Observable, takeUntil, Subject } from 'rxjs';
@@ -14,7 +14,7 @@ import { FormControl } from '@angular/forms';
   templateUrl: './time.component.html',
   styleUrls: ['./time.component.css'],
 })
-export class TimeComponent {
+export class TimeComponent implements OnInit, OnDestroy {
   times: string[] = [];
   selectedDate = new FormControl(new Date());
   appointmentInTime$: Observable<ITimeSlot[]> =

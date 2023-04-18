@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { BehaviorSubject } from 'rxjs';
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.css'],
 })
-export class CalendarComponent implements OnInit {
+export class CalendarComponent {
   currentDate$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
 
   today$: BehaviorSubject<Date> = new BehaviorSubject(new Date());
@@ -15,8 +15,6 @@ export class CalendarComponent implements OnInit {
   constructor() {
     this.selectedDate = new FormControl(new Date());
   }
-
-  ngOnInit() {}
 
   get emptyTilesBefore(): number[] {
     const firstDayOfMonth = new Date(
